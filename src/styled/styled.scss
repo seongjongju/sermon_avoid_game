@@ -1,0 +1,92 @@
+/* 2D 피하기 게임 메인 스크린 (Block) */
+@use "sass:color";
+
+#screen {
+    position: relative;
+    width: 800px;
+    height: 600px;
+    background-color: #222;
+    overflow: hidden;
+    margin: 20px auto;
+    border: 4px solid #fff;
+
+    /* 점수판 (Element) */
+    .score {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        color: #fff;
+        font-size: 24px;
+        font-weight: bold;
+        z-index: 10;
+    }
+
+    /* 플레이어 캐릭터 (Element) */
+    .player {
+        position: absolute;
+        bottom: 20px;
+        width: 50px;
+        height: 50px;
+        background-color: #00ffcc;
+        border-radius: 4px;
+        will-change: transform; /* 하드웨어 가속 최적화 */
+    }
+
+    /* 하늘에서 떨어지는 장애물 (Element) */
+    .game-obstacle {
+        position: absolute;
+        top: 0;
+        padding: 6px 12px; 
+        background-color: #ff4444;
+        color: #fff;
+        font-size: 13px; 
+        font-weight: bold;
+        border-radius: 6px; 
+        white-space: nowrap; 
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        will-change: transform;
+    }
+
+  /* 게임오버 / 대기화면 오버레이 (Element) */
+    .game-over {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: #fff;
+        z-index: 20;
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            font-size: 20px;
+            color: #aaa;
+        }
+
+        .game-button {
+            margin-top: 20px;
+            padding: 12px 24px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #222;
+            background-color: #00ffcc;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+
+            &:hover {
+                background-color: color.adjust(#00ffcc, $lightness: -10%);
+            }
+        }
+    }
+}

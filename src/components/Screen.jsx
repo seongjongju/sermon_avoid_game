@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
-import '../../styled/styled.scss';
+import '../styled/styled.scss';
+import gameBg from '../assets/img/game_bg.webp';
+import playerCharacter from '../assets/img/character.gif';
 
 const GAME_WIDTH = 800;
 const GAME_HEIGHT = 600;
 const PLAYER_WIDTH = 50;
-const OBSTACLE_SIZE = 40;
+const OBSTACLE_SIZE = 100;
 
 //랜덤한 텍스트 배열
 const TEXTS = [
@@ -111,13 +113,13 @@ const Screen = () => {
 
             // 3. 장애물 이동 및 충돌 검사
             const currentObstacles = [];
-            const playerY = GAME_HEIGHT - 20 - PLAYER_WIDTH; // 바닥에서 20px 뜬 기준
+            const playerY = GAME_HEIGHT - PLAYER_WIDTH + 20;
 
             for (let obs of obstaclesRef.current) {
                 obs.y += obs.speed;
 
                 // 화면 아래로 벗어난 경우
-                if (obs.y > GAME_HEIGHT) {
+                if (obs.y > GAME_HEIGHT - 20) {
                     obs.element?.remove(); // 화면에서 삭제
                     scoreRef.current += 10;
                     setScore(scoreRef.current); 
@@ -169,11 +171,15 @@ const Screen = () => {
     }, []);
 
     return (
-        <div id='screen' ref={gameBoardRef}>
+        <div id='screen' ref={gameBoardRef} style={{
+            background: `url(${gameBg}) no-repeat center / cover` 
+        }}>
             <div className='score'>Score: {score}</div>
 
             {/* 플레이어 캐릭터에 ref 연결 */}
-            <div className="player" ref={playerRef}></div>
+            <div className="player" ref={playerRef}>
+                <img src={playerCharacter} alt="플레이어 캐릭터" />
+            </div>
 
             {isGameOver && (
                 <div className="game-over">

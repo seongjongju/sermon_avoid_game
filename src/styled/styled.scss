@@ -21,6 +21,45 @@
         z-index: 10;
     }
 
+    /* 우측 상단 음량 조절 컨트롤러 (Element) 추가 */
+    .volume-control {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background-color: rgba(0, 0, 0, 0.6);
+        padding: 6px 12px;
+        border-radius: 20px;
+        z-index: 30; /* game-over(z-index: 20)보다 위에 위치하여 게임 오버 시에도 조작 가능 */
+        user-select: none;
+
+        .volume-icon {
+            font-size: 16px;
+            cursor: pointer;
+            
+            &:hover {
+                opacity: 0.8;
+            }
+        }
+
+        .volume-slider {
+            width: 80px;
+            height: 6px;
+            accent-color: #00ffcc; /* 슬라이더 하이라이트 색상 (게임 버튼과 동일) */
+            cursor: pointer;
+        }
+
+        .volume-value {
+            color: #fff;
+            font-size: 13px;
+            font-weight: bold;
+            min-width: 35px;
+            text-align: right;
+        }
+    }
+
     /* 플레이어 캐릭터 (Element) */
     .player {
         position: absolute;
@@ -86,6 +125,15 @@
             &:hover {
                 background-color: color.adjust(#00ffcc, $lightness: -10%);
             }
+        }
+
+        .bgm-credit {
+            position: absolute;
+            bottom: 15px;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.5);
+            text-align: center;
+            line-height: 1.4;
         }
     }
 }

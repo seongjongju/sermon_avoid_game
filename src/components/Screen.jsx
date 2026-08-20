@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import '../styled/styled.scss';
 import gameBg from '../assets/img/game_bg.webp';
 import playerCharacter from '../assets/img/character.gif';
+import bgm from '../assets/bgm/kevin-macleod-carefree.mp3';
 
 const GAME_WIDTH = 800;
 const GAME_HEIGHT = 600;
@@ -26,6 +27,25 @@ const Screen = () => {
     const [score, setScore] = useState(0); // 점수
     const [isGameOver, setIsGameOver] = useState(true); // 게임 오버 상태
 
+    const [volume, setVolume] = useState(50); //음량 조절
+
+    // 1. 음소거 직전의 볼륨(0~100)을 기억하는 ref (기본값 50)
+    const prevVolumeRef = useRef(50);
+
+    const bgmRef = useRef(new Audio(bgm)); //BGM
+    
+    useEffect(() => {
+        // BGM 반복 재생 및 음량 설정
+        bgmRef.current.loop = true;
+        bgmRef.current.volume = volume / 100; // 기본 50
+
+        // 컴포넌트 언마운트 시 음악 정지 처리
+        return () => {
+            bgmRef.current.pause();
+            bgmRef.current.currentTime = 0;
+        };
+    }, []);
+
     // 플레이어 상호작용 데이터
     const playerXRef = useRef(GAME_WIDTH / 2 - PLAYER_WIDTH / 2); // 플레이어 X 좌표
     const obstaclesRef = useRef([]); // [{ id, x, y, speed, element }, ...]
@@ -41,8 +61,40 @@ const Screen = () => {
     const requestRef = useRef(null);
     const getRandom = useRef(() => Math.random()).current;
 
+    //볼륨 조절 핸들러
+    const handleVolumeChange = (e) => {
+        const newVolume = Number(e.target.value);
+        setVolume(newVolume);
+
+        if (bgmRef.current) {
+            bgmRef.current.volume = newVolume / 100;
+        }
+
+        // 슬라이더를 0보다 크게 직접 조절한 경우, 직전 볼륨 기억값도 함께 업데이트
+        if (newVolume > 0) {
+            prevVolumeRef.current = newVolume;
+        }
+    };
+
+    const toggleMute = () => {
+        if (volume > 0) {
+            // 현재 음량이 있으면: 직전 음량으로 기억해두고 0(음소거)으로 전환
+            prevVolumeRef.current = volume;
+            setVolume(0);
+            if (bgmRef.current) bgmRef.current.volume = 0;
+        } else {
+            // 음소거 상태이면: 기억해둔 직전 음량으로 복구 (기억값이 없으면 기본 50)
+            const restoredVolume = prevVolumeRef.current > 0 ? prevVolumeRef.current : 50;
+            setVolume(restoredVolume);
+            if (bgmRef.current) bgmRef.current.volume = restoredVolume / 100;
+        }
+    };
+
     // 게임 시작 및 초기화
     const startGame = () => {
+        bgmRef.current.currentTime = 0;
+        bgmRef.current.play().catch((err) => console.log("오디오 재생 실패:", err));
+
         // 기존에 화면에 남아있던 장애물 DOM 엘리먼트 제거
         obstaclesRef.current.forEach(obs => obs.element?.remove());
         
@@ -138,6 +190,7 @@ const Screen = () => {
 
                     if (isColliding) {
                         isGameOverRef.current = true;
+                        bgmRef.current.pause(); // 게임 오버 시 BGM 일시정지
                         setIsGameOver(true);
                     }
 
@@ -176,6 +229,21 @@ const Screen = () => {
         }}>
             <div className='score'>Score: {score}</div>
 
+            <div className="volume-control">
+                <span className="volume-icon" onClick={toggleMute} role="button" tabIndex={0}>
+                    {volume === 0 ? '🔇' : volume < 50 ? '🔉' : '🔊'}
+                </span>
+                <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={volume}
+                    onChange={handleVolumeChange}
+                    className="volume-slider"
+                />
+                <span className="volume-value">{volume}%</span>
+            </div>
+
             {/* 플레이어 캐릭터에 ref 연결 */}
             <div className="player" ref={playerRef}>
                 <img src={playerCharacter} alt="플레이어 캐릭터" />
@@ -188,6 +256,13 @@ const Screen = () => {
                     <button className="game-button" onClick={startGame}>
                         {score > 0 ? '다시 도전하기' : '게임 시작'}
                     </button>
+
+                    {/* 저작권 출처 표기 구문 추가 */}
+                    <div className="bgm-credit">
+                        BGM: "Children's Happy" by Kevin MacLeod (incompetech.com)<br />
+                        License: Creative Commons / Attribution 4.0 International (CC BY 4.0)<br />
+                        http://creativecommons.org/licenses/by/4.0/
+                    </div>
                 </div>
             )}
         </div>

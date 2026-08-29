@@ -136,13 +136,13 @@ const Screen = () => {
             // 2. 새로운 장애물 생성 (약 3% 확률)
             if (getRandom() < 0.03) {
                 const speedBonus = scoreRef.current / 100;
-                const cappedBonus = Math.min(5, speedBonus); //속도 최대 5
+                const cappedBonus = Math.min(3, speedBonus); //속도 최대 3
 
                 const newObstacle = {
                     id: Date.now() + getRandom(),
                     x: getRandom() * (GAME_WIDTH - OBSTACLE_SIZE),
                     y: 0,
-                    speed: 4 + getRandom() * 5 + cappedBonus, //점점 빠르게 
+                    speed: 2 + getRandom() * 3 + cappedBonus, //점점 빠르게 
                     element: null
                 };
 
